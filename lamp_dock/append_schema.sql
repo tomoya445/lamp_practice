@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- ホスト: mysql
--- 生成日時: 2020 年 12 月 20 日 09:07
+-- 生成日時: 2020 年 12 月 21 日 01:16
 -- サーバのバージョン： 5.7.32
 -- PHP のバージョン: 7.4.11
 
@@ -29,12 +29,10 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `details` (
   `id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
+  `order_id` int(11) NOT NULL,
   `item_id` int(11) NOT NULL,
   `buy_price` int(11) NOT NULL,
-  `purchase` int(11) NOT NULL,
-  `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `updated` datetime NOT NULL
+  `quantity` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -46,10 +44,7 @@ CREATE TABLE `details` (
 CREATE TABLE `history` (
   `order_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `item_id` int(11) NOT NULL,
-  `purchase` int(11) NOT NULL,
-  `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `updated` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
