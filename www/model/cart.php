@@ -105,6 +105,7 @@ function purchase_carts($db, $carts){
   if(validate_cart_purchase($carts) === false){
     return false;
   }
+  $db->beginTransaction();
   foreach($carts as $cart){
     if(update_item_stock(
         $db, 
@@ -116,6 +117,12 @@ function purchase_carts($db, $carts){
   }
   
   delete_user_carts($db, $carts[0]['user_id']);
+  create_history($db,$carts);
+  if(has_error() === true) {
+    $db->rollback();
+  } else {
+    $db->commit();
+  }
 }
 
 function delete_user_carts($db, $user_id){
@@ -157,3 +164,43 @@ function validate_cart_purchase($carts){
   return true;
 }
 
+function add_history($db, $user_id) {
+  $sql = "
+    INSERT INTO
+      history(
+        user_id
+      )
+    VALUES(?)
+  ";
+  return execute_query($db,$sql,[$user_id]);
+}
+
+function add_details($db, $order_id, $item_id, $price, $quantity) {
+  $sql = "
+    INSERT INTO
+      details(
+        order_id,
+        item_id,
+        buy_price,
+        quantity
+      )
+    VALUES(?,?,?,?)
+  ";
+  return execute_query($db, $sql,[$order_id, $item_id, $price, $quantity]);
+}
+function create_history($db, $carts) {
+  //add_history実行
+  if(add_history($db,$carts[0]['user_id']) === false) {
+    set_error('履歴テーブルへの追加に失敗しました');
+    return false;
+  }
+  $oder_id = $db->lastInsertId();
+  foreach($carts as $cart) {
+    //add_details実行
+    if(add_details($db,$oder_id,$cart['item_id'],$cart['price'],$cart['amount'])===false) {
+      set_error($cart['name'].'の明細テーブルへの追加に失敗しました');
+      return false;
+    }
+  }
+  return true;
+}
